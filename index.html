@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessible Interactive Photo Gallery</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="initializeGallery()">
+
+    <main class="box">
+        <h1>Interactive Car Gallery</h1>
+        
+        <div class="screen" id="preview" aria-live="polite" role="region" aria-label="Photo Previewer">
+            <p id="preview-text">Hover or Tab to an image below</p>
+        </div>
+
+        <section class="gallery-thumbnails" aria-label="Gallery Images">
+            <img src="https://images.unsplash.com/photo-1549924231-f129b911e442" 
+                 alt="Red sports car parked on road">
+
+            <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d" 
+                 alt="White electric car Tesla on street">
+
+            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70" 
+                 alt="Off-road jeep driving on mountain terrain">
+        </section>
+    </main>
+
+    <script>
+        // دالة التحديث عند المرور أو التركيز بالـ Tab
+        function upDate(previewPic) {
+            let previewBox = document.getElementById("preview");
+            
+            // تعديل الصورة الخلفية والنص بناءً على العنصر النشط
+            previewBox.style.backgroundImage = "url('" + previewPic.src + "')";
+            previewBox.innerHTML = previewPic.alt;
+            
+            // طباعة للتأكد في الـ Console أثناء التطوير
+            console.log("Displaying: " + previewPic.alt);
+        }
+
+        // دالة الإعادة للوضع الافتراضي عند الخروج بالماوس أو التوجيه
+        function unDo() {
+            let previewBox = document.getElementById("preview");
+            
+            previewBox.style.backgroundImage = "url('')";
+            previewBox.innerHTML = "Hover or Tab to an image below";
+        }
+
+        // الدالة المطلوبة لتهيئة المعرض تلقائياً وإضافة tabindex برمجياً
+        function initializeGallery() {
+            console.log("Gallery initialized successfully.");
+            
+            // اختيار جميع الصور الموجودة داخل قسم المعرض المصغر
+            let images = document.querySelectorAll(".gallery-thumbnails img");
+            
+            for (let i = 0; i < images.length; i++) {
+                // 1. إضافة الـ tabindex تلقائياً برمجياً لتصبح قابلة للتركيز بالـ Keyboard
+                images[i].setAttribute("tabindex", "0");
+                
+                // 2. ربط أحداث الماوس برمجياً (للحفاظ على نظافة كود HTML للـ W3 validator)
+                images[i].onmouseover = function() { upDate(this); };
+                images[i].onmouseout = function() { unDo(); };
+                
+                // 3. ربط أحداث لوحة المفاتيح (عبر زر الـ Tab والتركيز) لضمان الـ Accessibility
+                images[i].onfocus = function() { upDate(this); };
+                images[i].onblur = function() { unDo(); };
+            }
+        }
+    </script>
+
+</body>
+</html>
